@@ -6,100 +6,40 @@ from __init__ import app, db
 
 class Images(db.Model):
     __tablename__ = "images"
-    id = Column(Integer, primary_key = True)
-    _imagePath = Column 
+    id = Column(Integer, primary_key=True)
+    imagePath = Column(String(255), nullable=False)
 
-    _xCoord = Column(Integer, nullable=False)
-    _yCoord = Column(Integer, nullable=False)
-    _difficulty = Column(Integer, nullable=False)
-
-    
-    def __init__(self, imagePath, xCoord, yCoord, difficulty):
-        self._imagePath = imagePath
-        self.xCoord = xCoord
-        self.yCoord = yCoord
-        self.difficulty = difficulty
+    def __init__(self, imagePath):
+        self.imagePath = imagePath
 
     def __repr__(self):
-        return "<image(id='%s', imagePath='%s', xCoord='%s', yCoord='%s', difficulty='%s')>" % (
+        return "<image(id='%s', imagePath='%s')>" % (
             self.id,
-            self.imagePath,
-            self.xCoord,
-            self.yCoord,
-            self.difficulty
+            self.imagePath
         )
-    @property
-    def imagePath(self):
-        return self._imagePath
-
-    @imagePath.setter
-    def imagePath(self, value):
-        self._imagePath = value
-
-    @property
-    def xCoord(self):
-        return self._xCoord
-
-    @xCoord.setter
-    def xCoord(self, value):
-        self._xCoord = value
-
-    @property
-    def yCoord(self):
-        return self._yCoord
-
-    @yCoord.setter
-    def yCoord(self, value):
-        self._yCoord = value
-
-    @property
-    def difficulty(self):
-        return self._difficulty
-
-    @difficulty.setter
-    def difficulty(self, value):
-        self._difficulty = value
 
     def to_dict(self):
-        return {"id": self.id, "imagePath": self._imagePath, "xCoord": self._xCoord, "yCoord": self._yCoord, "difficulty": self._difficulty}
+        return {"id": self.id, "imagePath": self.imagePath}
 
     def create(self):
         try:
-            # creates a person object from User(db.Model) class, passes initializers
-            db.session.add(self)  # add prepares to persist person object to Users table
-            db.session.commit()  # SqlAlchemy "unit of work pattern" requires a manual commit
+            db.session.add(self)
+            db.session.commit()
             return self
         except IntegrityError:
             db.session.remove()
             return None
 
-    # CRUD read converts self to dictionary
-    # returns dictionary
     def read(self):
         return {
-            "path": self.imagePath,
-            "xCoord": self.xCoord,
-            "yCoord": self.yCoord,
-            "difficulty": self.difficulty
+            "path": self.imagePath
         }
 
-    # CRUD update: updates user name, password, phone
-    # returns self
-    def update(self, path="", xCoord="", yCoord="", difficulty=""):
-        """only updates values with length"""
-        xCoord = int(xCoord)
-        yCoord = int(yCoord)
+    def update(self, path=""):
         if path:
             self.imagePath = path
-        if xCoord >= 0:
-            self.xCoord = xCoord
-        if yCoord >= 0:
-            self.yCoord = yCoord
-        if difficulty in range(3):
-            self.difficulty = difficulty
         db.session.commit()
         return self
-
 
     def delete(self):
         db.session.delete(self)
@@ -111,12 +51,11 @@ def initEasyImages():
         db.create_all()
         image_dir = Path.cwd()/"images"
         images_paths = [i.name for i in image_dir.iterdir()]
-        images = [Images("images" + image, 250, 250, 0) for image in images_paths]
+        images = [Images("images" + image) for image in images_paths]
         for image in images:
-             try:
+            try:
                 image.create()
                 print("Successfully added entry")
-             except:
-                 db.session.remove()
-                 print("Error adding image: ", image.imagePath)
-
+            except:
+                db.session.remove()
+                print("Error adding image: ", image.imagePath)
