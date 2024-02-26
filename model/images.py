@@ -4,16 +4,24 @@ from pathlib import Path
 import sqlite3
 from __init__ import app, db
 
+from sqlalchemy import Column, Integer, String, LargeBinary
+from __init__ import db
+
 class Images(db.Model):
     __tablename__ = "images"
-    id = Column(Integer, primary_key=True)
-    imagePath = Column(String(255), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    _xCoord = Column(Integer, nullable=False, default=250)  # Default value set to 250
+    _yCoord = Column(Integer, nullable=False, default=250)  # Default value set to 250
+    _difficulty = Column(Integer, nullable=False, default=0)
+    imageData = db.Column(db.Text, nullable=True)
+    imagePath = db.Column(db.Text, nullable=True)
 
-    def __init__(self, imagePath):
+    def __init__(self, imagePath, imageData=None): 
         self.imagePath = imagePath
+        self.imageData = imageData
 
     def __repr__(self):
-        return "<image(id='%s', imagePath='%s')>" % (
+      return f"<image(id='{self.id}', imagePath='{self.imagePath}')>"(
             self.id,
             self.imagePath
         )
