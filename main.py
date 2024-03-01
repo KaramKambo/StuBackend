@@ -14,9 +14,12 @@ from api.covid import covid_api # Blueprint import api definition
 from api.joke import joke_api # Blueprint import api definition
 from api.user import user_api # Blueprint import api definition
 from api.player import player_api
+from api.image import  images_bp
+
 # database migrations
 from model.users import initUsers
 from model.players import initPlayers
+from model.images import initEasyImages
 
 # setup App pages
 from projects.projects import app_projects # Blueprint directory import projects definition
@@ -31,6 +34,7 @@ app.register_blueprint(covid_api) # register api routes
 app.register_blueprint(user_api) # register api routes
 app.register_blueprint(player_api)
 app.register_blueprint(app_projects) # register app pages
+app.register_blueprint(images_bp)
 
 @app.errorhandler(404)  # catch for URL not found
 def page_not_found(e):
@@ -60,6 +64,7 @@ custom_cli = AppGroup('custom', help='Custom commands')
 def generate_data():
     initUsers()
     initPlayers()
+    initEasyImages()
 
 # Register the custom command group with the Flask application
 app.cli.add_command(custom_cli)
@@ -67,4 +72,4 @@ app.cli.add_command(custom_cli)
 # this runs the application on the development server
 if __name__ == "__main__":
     # change name for testing
-    app.run(debug=True, host="0.0.0.0", port="8086")
+    app.run(debug=True, host="0.0.0.0", port="8097")
